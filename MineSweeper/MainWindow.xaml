@@ -3,10 +3,80 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:conv="clr-namespace:MineSweeper.Converters"
+        xmlns:lang="clr-namespace:MineSweeper.Properties"
         xmlns:local="clr-namespace:MineSweeper"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
+        Title="MineSweeper" MinHeight="500" MinWidth="300" Height="500" Width="400" Name="Window">
+    <Window.Resources>
+        <ObjectDataProvider x:Key="CultureResources"
+                            ObjectType="{x:Type local:CultureResources}"
+                            MethodName="GetResourceInstance"/>
+    </Window.Resources>
     <Grid>
-        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="9*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Menu Grid.Row="0">
+            <MenuItem Header="{Binding Path=GameText,Source={StaticResource CultureResources}}">
+                <MenuItem Header="{Binding Path=NewGameText,Source={StaticResource CultureResources}}" Click="NewGame_Click"/>
+                <MenuItem Header="{Binding Path=SettingsText,Source={StaticResource CultureResources}}" Click="Settings_Click"/>
+                <MenuItem Header="{Binding Path=TimeGameText,Source={StaticResource CultureResources}}"
+                          IsCheckable="True" IsChecked="{Binding TimeGame}"/>
+                <MenuItem Header="{Binding Path=ExitText,Source={StaticResource CultureResources}}" Click="ExitClick"/>
+            </MenuItem>
+            <MenuItem Header="{Binding Path=RulesText,Source={StaticResource CultureResources}}" Click="Rules_Click" />
+            <MenuItem Header="{Binding Path=ControlsText,Source={StaticResource CultureResources}}" Click="Controls_Click"/>
+            <MenuItem Header="{Binding Path=AboutText,Source={StaticResource CultureResources}}" Click="About_Click"/>
+            <MenuItem Header="{Binding Path=PolishText,Source={StaticResource CultureResources}}" Click="Polish_Click">
+                <MenuItem.Icon>
+                    <Image Source="{Binding Source={x:Static lang:Resources.PolishFlag},
+                        Converter={x:Static conv:DrawingBitmapToImageConverter.Instance}}"/>
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="{Binding Path=EnglishText,Source={StaticResource CultureResources}}" Click="English_Click">
+                <MenuItem.Icon>
+                    <Image Source="{Binding Source={x:Static lang:Resources.EnglishFlag},
+                        Converter={x:Static conv:DrawingBitmapToImageConverter.Instance}}"/>
+                </MenuItem.Icon>
+            </MenuItem>
+        </Menu>
+        <DockPanel Grid.Row="1" Margin="0 5 0 0">
+            <TextBlock Text="{Binding BombCountDisplay,Mode=OneWay}"/>
+        </DockPanel>
+        <ItemsControl Grid.Row="2" Margin="0 5 0 0" ItemsSource="{Binding Tiles}">
+            <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+                    <UniformGrid  Columns="{Binding ColumnsCount}" Rows="{Binding RowsCount}"/>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Button  PreviewMouseDown="Tile_MouseDown" Content="{Binding Path=Display,Converter={x:Static conv:TileDisplayConverter.Instance}}">
+                        <Button.Style>
+                            <Style TargetType="{x:Type Button}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Path=Display,Converter={x:Static conv:NotBitmapConverter.Instance}}" Value="True">
+                                        <Setter Property="Background" Value="White"/>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding Path=Discovered}" Value="False">
+                                        <Setter Property="Background" Value="Gray"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+        <StatusBar Grid.Row="3">
+            <TextBlock>
+                <Run Text="{Binding Path=LanguageText,Source={StaticResource CultureResources},Mode=OneWay}"/>
+                <Run Text="{Binding CurrentLanguage,Mode=OneWay}"/>
+            </TextBlock>
+        </StatusBar>
     </Grid>
 </Window>
