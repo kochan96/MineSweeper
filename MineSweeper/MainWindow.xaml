@@ -4,14 +4,17 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:conv="clr-namespace:MineSweeper.Converters"
-        xmlns:lang="clr-namespace:MineSweeper.Properties"
+        xmlns:prop="clr-namespace:MineSweeper.Properties"
         xmlns:local="clr-namespace:MineSweeper"
         mc:Ignorable="d"
-        Title="MineSweeper" MinHeight="500" MinWidth="300" Height="500" Width="400" Name="Window">
+        Title="MineSweeper" MinHeight="500" MinWidth="420" Height="500" Width="420" Name="Window">
     <Window.Resources>
         <ObjectDataProvider x:Key="CultureResources"
-                            ObjectType="{x:Type local:CultureResources}"
+                            ObjectType="{x:Type local:Localizer}"
                             MethodName="GetResourceInstance"/>
+        <Style x:Key="SevenSegmentBox" TargetType="{x:Type Label}">
+            <Setter Property="FontFamily" Value="{x:Static prop:Resources.DSEG7Modern_BoldItalic}"/>
+            </Style>
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -21,7 +24,7 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <Menu Grid.Row="0">
-            <MenuItem Header="{Binding Path=GameText,Source={StaticResource CultureResources}}">
+            <MenuItem Header="{Binding Path=GameText,Source={ StaticResource CultureResources}}">
                 <MenuItem Header="{Binding Path=NewGameText,Source={StaticResource CultureResources}}" Click="NewGame_Click"/>
                 <MenuItem Header="{Binding Path=SettingsText,Source={StaticResource CultureResources}}" Click="Settings_Click"/>
                 <MenuItem Header="{Binding Path=TimeGameText,Source={StaticResource CultureResources}}"
@@ -33,37 +36,47 @@
             <MenuItem Header="{Binding Path=AboutText,Source={StaticResource CultureResources}}" Click="About_Click"/>
             <MenuItem Header="{Binding Path=PolishText,Source={StaticResource CultureResources}}" Click="Polish_Click">
                 <MenuItem.Icon>
-                    <Image Source="{Binding Source={x:Static lang:Resources.PolishFlag},
+                    <Image Source="{Binding Source={x:Static prop:Resources.PolishFlag},
                         Converter={x:Static conv:DrawingBitmapToImageConverter.Instance}}"/>
                 </MenuItem.Icon>
             </MenuItem>
             <MenuItem Header="{Binding Path=EnglishText,Source={StaticResource CultureResources}}" Click="English_Click">
                 <MenuItem.Icon>
-                    <Image Source="{Binding Source={x:Static lang:Resources.EnglishFlag},
+                    <Image Source="{Binding Source={x:Static prop:Resources.EnglishFlag},
                         Converter={x:Static conv:DrawingBitmapToImageConverter.Instance}}"/>
                 </MenuItem.Icon>
             </MenuItem>
+
+            <MenuItem Header="Debug" IsCheckable="True" IsChecked="True" Checked="Debug_Checked" Unchecked="Debug_Checked"/>
         </Menu>
-        <DockPanel Grid.Row="1" Margin="0 5 0 0">
-            <TextBlock Text="{Binding BombCountDisplay,Mode=OneWay}"/>
-        </DockPanel>
-        <ItemsControl Grid.Row="2" Margin="0 5 0 0" ItemsSource="{Binding Tiles}">
+        <Grid Grid.Row="1" Background="White">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Label Grid.Column="0" Style="{DynamicResource SevenSegmentBox}"
+                   Content="{Binding BombCountDisplay,Mode=OneWay}">
+            </Label>
+        </Grid>
+        <ItemsControl Grid.Row="2" ItemsSource="{Binding Tiles}">
             <ItemsControl.ItemsPanel>
-            <ItemsPanelTemplate>
+                <ItemsPanelTemplate>
                     <UniformGrid  Columns="{Binding ColumnsCount}" Rows="{Binding RowsCount}"/>
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <Button  PreviewMouseDown="Tile_MouseDown" Content="{Binding Path=Display,Converter={x:Static conv:TileDisplayConverter.Instance}}">
+                    <Button  PreviewMouseDown="Tile_MouseDown" 
+                            Content="{Binding Path=Display,Converter={x:Static conv:TileDisplayConverter.Instance}}">
                         <Button.Style>
                             <Style TargetType="{x:Type Button}">
                                 <Style.Triggers>
-                                    <DataTrigger Binding="{Binding Path=Display,Converter={x:Static conv:NotBitmapConverter.Instance}}" Value="True">
+                                    <DataTrigger Binding="{Binding Path=Display,Converter={x:Static conv:IsIntegerOrEmptyConverter.Instance}}" Value="True">
                                         <Setter Property="Background" Value="White"/>
                                     </DataTrigger>
                                     <DataTrigger Binding="{Binding Path=Discovered}" Value="False">
-                                        <Setter Property="Background" Value="Gray"/>
+                                        <Setter Property="Background" Value="DimGray"/>
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>

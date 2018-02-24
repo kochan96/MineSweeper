@@ -8,23 +8,23 @@ using System.Windows.Data;
 
 namespace MineSweeper.Converters
 {
-    public class NotBitmapConverter: IValueConverter
+    public class IsIntegerOrEmptyConverter: IValueConverter
     {
-        private static NotBitmapConverter instance;
-        public static NotBitmapConverter Instance
+        private static IsIntegerOrEmptyConverter instance;
+        public static IsIntegerOrEmptyConverter Instance
         {
             get
             {
                 if (instance == null)
-                    instance = new NotBitmapConverter();
+                    instance = new IsIntegerOrEmptyConverter();
                 return instance;
             }
         }
 
-        private NotBitmapConverter() { }
+        private IsIntegerOrEmptyConverter() { }
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return !(value is System.Drawing.Bitmap);
+            return value is int || int.TryParse(value.ToString(), out int result) || value.ToString()==String.Empty;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

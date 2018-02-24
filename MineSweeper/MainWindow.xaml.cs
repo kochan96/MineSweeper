@@ -27,7 +27,9 @@ namespace MineSweeper
         public MainWindow()
         {
             SetLanguage(MineSweeper.Language.English);
+            DEBUG = false;
             DataContext = this;
+            //default values
             ColumnsCount = 16;
             RowsCount = 16;
             BombCount = 40;
@@ -53,7 +55,7 @@ namespace MineSweeper
         int FlagCount;
         int TilesShown;
 
-        internal static bool DEBUG = true;
+        internal static bool DEBUG;
         static Random rnd = new Random();
         bool GameOver;
         #endregion
@@ -67,7 +69,7 @@ namespace MineSweeper
 
         private void Settings_Click(object sender, RoutedEventArgs e)
         {
-
+            //TODO:
         }
         private void About_Click(object sender, RoutedEventArgs e)
         {
@@ -76,12 +78,12 @@ namespace MineSweeper
 
         private void Rules_Click(object sender, RoutedEventArgs e)
         {
-
+            //TODO
         }
 
         private void Controls_Click(object sender, RoutedEventArgs e)
         {
-
+            //TODO
         }
 
         private void Polish_Click(object sender, RoutedEventArgs e)
@@ -103,6 +105,13 @@ namespace MineSweeper
             MessageBoxResult result = MessageBox.Show(Properties.Resources.ConfirmationMessage,
                 Properties.Resources.ConfirmationCaption, MessageBoxButton.YesNo, MessageBoxImage.Question);
             e.Cancel = result == MessageBoxResult.No;
+        }
+
+        private void Debug_Checked(object sender, RoutedEventArgs e)
+        {
+            DEBUG = !DEBUG;
+            foreach (Tile t in Tiles)
+                t.RefreshDisplay();
         }
 
         #endregion
@@ -130,14 +139,10 @@ namespace MineSweeper
                     throw new NotImplementedException();
             }
 
-            ObjectDataProvider provider = TryFindResource(nameof(CultureResources)) as ObjectDataProvider;
-            provider?.Refresh();
+            ObjectDataProvider provider = TryFindResource("Culture Resources") as ObjectDataProvider;
+            provider?.Refresh();//refresh text
             OnPropertyChanged(nameof(CurrentLanguage));
         }
-
-        
-
-     
         #endregion
 
         #region INotifyPropertyChanged
@@ -197,7 +202,34 @@ namespace MineSweeper
             }
 
         }
-
+        private void ProccessAdjacent(int x, int y, Action<Tile> method)
+        {
+            if (x > 0)
+            {
+                if (y > 0)
+                    method(Tiles[CalculateIndex(y - 1, x - 1)]);//top-left
+                if (y < RowsCount)
+                    method(Tiles[CalculateIndex(y, x - 1)]);//left
+                if (y < RowsCount - 1)
+                    method(Tiles[CalculateIndex(y + 1, x - 1)]);//bottom-left
+            }
+            if (x < ColumnsCount)
+            {
+                if (y > 0)
+                    method(Tiles[CalculateIndex(y - 1, x)]);//top
+                if (y < RowsCount - 1)
+                    method(Tiles[CalculateIndex(y + 1, x)]);//bottom
+            }
+            if (x < ColumnsCount - 1)
+            {
+                if (y > 0)
+                    method(Tiles[CalculateIndex(y - 1, x + 1)]);//top-right
+                if (y < RowsCount)
+                    method(Tiles[CalculateIndex(y, x + 1)]);//right
+                if (y < RowsCount - 1)
+                    method(Tiles[CalculateIndex(y + 1, x + 1)]);//bottom-right
+            }
+        }
 
 
         private void EndGame()
@@ -232,38 +264,10 @@ namespace MineSweeper
             if (tile.Display.ToString() != String.Empty)
                 return;
 
-
             ProccessAdjacent(x, y, (t) => ShowAllAdjacent(t));
         }
 
-        private void ProccessAdjacent(int x, int y, Action<Tile> method)
-        {
-            if (x > 0)
-            {
-                if (y > 0)
-                    method(Tiles[CalculateIndex(y - 1, x - 1)]);//top-left
-                if (y < RowsCount)
-                    method(Tiles[CalculateIndex(y, x - 1)]);//left
-                if (y < RowsCount - 1)
-                    method(Tiles[CalculateIndex(y + 1, x - 1)]);//bottom-left
-            }
-            if (x < ColumnsCount)
-            {
-                if (y > 0)
-                    method(Tiles[CalculateIndex(y - 1, x)]);//top
-                if (y < RowsCount - 1)
-                    method(Tiles[CalculateIndex(y + 1, x)]);//bottom
-            }
-            if (x < ColumnsCount - 1)
-            {
-                if (y > 0)
-                    method(Tiles[CalculateIndex(y - 1, x + 1)]);//top-right
-                if (y < RowsCount)
-                    method(Tiles[CalculateIndex(y, x + 1)]);//right
-                if (y < RowsCount - 1)
-                    method(Tiles[CalculateIndex(y + 1, x + 1)]);//bottom-right
-            }
-        }
+       
 
         private void Tile_MouseDown(object sender, MouseButtonEventArgs e)
         {
@@ -319,8 +323,9 @@ namespace MineSweeper
         }
 
 
+
         #endregion
 
-
+        
     }
 }

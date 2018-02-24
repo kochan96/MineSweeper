@@ -6,7 +6,13 @@ using System.Threading.Tasks;
 
 namespace MineSweeper
 {
-    public class CultureResources
+    public enum Language
+    {
+        English,
+        Polish
+    }
+
+    public class Localizer
     {
         public Properties.Resources GetResourceInstance()
         {
