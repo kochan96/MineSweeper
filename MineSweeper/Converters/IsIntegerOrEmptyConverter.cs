@@ -24,7 +24,7 @@ namespace MineSweeper.Converters
         private IsIntegerOrEmptyConverter() { }
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return value is int || int.TryParse(value.ToString(), out int result) || value.ToString()==String.Empty;
+            return value!=null && (value is int || int.TryParse(value.ToString(), out int result) || value.ToString()==String.Empty);
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

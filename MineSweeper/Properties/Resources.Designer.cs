@@ -79,12 +79,48 @@ namespace MineSweeper.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Accept.
+        /// </summary>
+        public static string AcceptSettingsText {
+            get {
+                return ResourceManager.GetString("AcceptSettingsText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         public static System.Drawing.Bitmap Bomb {
             get {
                 object obj = ResourceManager.GetObject("Bomb", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Bomb Count.
+        /// </summary>
+        public static string BombCountText {
+            get {
+                return ResourceManager.GetString("BombCountText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cancel.
+        /// </summary>
+        public static string CancelSettingsText {
+            get {
+                return ResourceManager.GetString("CancelSettingsText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Number of Columns.
+        /// </summary>
+        public static string ColumnsText {
+            get {
+                return ResourceManager.GetString("ColumnsText", resourceCulture);
             }
         }
         
@@ -107,21 +143,12 @@ namespace MineSweeper.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Controls.
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        public static string ControlsText {
+        public static System.Drawing.Bitmap DiffusedBomb {
             get {
-                return ResourceManager.GetString("ControlsText", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        public static byte[] DSEG7Modern_BoldItalic {
-            get {
-                object obj = ResourceManager.GetObject("DSEG7Modern_BoldItalic", resourceCulture);
-                return ((byte[])(obj));
+                object obj = ResourceManager.GetObject("DiffusedBomb", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
         
@@ -173,15 +200,6 @@ namespace MineSweeper.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Language: .
-        /// </summary>
-        public static string LanguageText {
-            get {
-                return ResourceManager.GetString("LanguageText", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to You lost ! .
         /// </summary>
         public static string LoseText {
@@ -219,11 +237,20 @@ namespace MineSweeper.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Rules.
+        ///   Looks up a localized string similar to Could not load Localized text.
         /// </summary>
-        public static string RulesText {
+        public static string ProviderNullError {
             get {
-                return ResourceManager.GetString("RulesText", resourceCulture);
+                return ResourceManager.GetString("ProviderNullError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Number of Rows.
+        /// </summary>
+        public static string RowsText {
+            get {
+                return ResourceManager.GetString("RowsText", resourceCulture);
             }
         }
         
@@ -242,6 +269,42 @@ namespace MineSweeper.Properties {
         public static string TimeGameText {
             get {
                 return ResourceManager.GetString("TimeGameText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Time.
+        /// </summary>
+        public static string TimeText {
+            get {
+                return ResourceManager.GetString("TimeText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to BombError.
+        /// </summary>
+        public static string TooManyBombsCaption {
+            get {
+                return ResourceManager.GetString("TooManyBombsCaption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to To many bombs! Must be less than: .
+        /// </summary>
+        public static string TooManyBombsMessage {
+            get {
+                return ResourceManager.GetString("TooManyBombsMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Yes/No.
+        /// </summary>
+        public static string TrueFalseText {
+            get {
+                return ResourceManager.GetString("TrueFalseText", resourceCulture);
             }
         }
         

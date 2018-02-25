@@ -7,32 +7,28 @@
         xmlns:prop="clr-namespace:MineSweeper.Properties"
         xmlns:local="clr-namespace:MineSweeper"
         mc:Ignorable="d"
-        Title="MineSweeper" MinHeight="500" MinWidth="420" Height="500" Width="420" Name="Window">
+        Title="MineSweeper" Height="500" Width="440" MinHeight="400" MinWidth="440">
     <Window.Resources>
-        <ObjectDataProvider x:Key="CultureResources"
-                            ObjectType="{x:Type local:Localizer}"
-                            MethodName="GetResourceInstance"/>
-        <Style x:Key="SevenSegmentBox" TargetType="{x:Type Label}">
-            <Setter Property="FontFamily" Value="{x:Static prop:Resources.DSEG7Modern_BoldItalic}"/>
-            </Style>
+        <FontFamily x:Key="SevenSegFontFamily">/MineSweeper;Component/Fonts/#NI7Seg</FontFamily>
+        <Style x:Key="SevenSegBox" TargetType="{x:Type TextBlock}">
+            <Setter Property="FontFamily" Value="{DynamicResource SevenSegFontFamily}"/>
+            <Setter Property="Foreground" Value="Red"/>
+        </Style>
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="9*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
+        <!--#region  Menu-->
         <Menu Grid.Row="0">
             <MenuItem Header="{Binding Path=GameText,Source={ StaticResource CultureResources}}">
                 <MenuItem Header="{Binding Path=NewGameText,Source={StaticResource CultureResources}}" Click="NewGame_Click"/>
                 <MenuItem Header="{Binding Path=SettingsText,Source={StaticResource CultureResources}}" Click="Settings_Click"/>
-                <MenuItem Header="{Binding Path=TimeGameText,Source={StaticResource CultureResources}}"
-                          IsCheckable="True" IsChecked="{Binding TimeGame}"/>
                 <MenuItem Header="{Binding Path=ExitText,Source={StaticResource CultureResources}}" Click="ExitClick"/>
             </MenuItem>
-            <MenuItem Header="{Binding Path=RulesText,Source={StaticResource CultureResources}}" Click="Rules_Click" />
-            <MenuItem Header="{Binding Path=ControlsText,Source={StaticResource CultureResources}}" Click="Controls_Click"/>
             <MenuItem Header="{Binding Path=AboutText,Source={StaticResource CultureResources}}" Click="About_Click"/>
             <MenuItem Header="{Binding Path=PolishText,Source={StaticResource CultureResources}}" Click="Polish_Click">
                 <MenuItem.Icon>
@@ -46,28 +42,46 @@
                         Converter={x:Static conv:DrawingBitmapToImageConverter.Instance}}"/>
                 </MenuItem.Icon>
             </MenuItem>
-
-            <MenuItem Header="Debug" IsCheckable="True" IsChecked="True" Checked="Debug_Checked" Unchecked="Debug_Checked"/>
         </Menu>
-        <Grid Grid.Row="1" Background="White">
+        <!--#endregion-->
+        
+        <!--#region BombCounter and Timer-->
+        <Grid Grid.Row="1" Background="White" Margin="5">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <Label Grid.Column="0" Style="{DynamicResource SevenSegmentBox}"
-                   Content="{Binding BombCountDisplay,Mode=OneWay}">
-            </Label>
+            <StackPanel Grid.Column="0">
+                <TextBlock  Style="{DynamicResource SevenSegBox}" FontSize="20"
+                        HorizontalAlignment="Center" TextWrapping="Wrap" 
+                            Text="{Binding Path=BombCountText,Source={StaticResource CultureResources}}"/>
+                <TextBlock  Style="{DynamicResource SevenSegBox}" FontSize="20"
+                        HorizontalAlignment="Center" TextWrapping="Wrap" Text="{Binding BombCountDisplay}"/>
+            </StackPanel>
+            <Button Grid.Column="1" Click="NewGame_Click" 
+                    Content="{Binding Path=NewGameText,Source={StaticResource CultureResources}}" Margin="10"/>
+            <StackPanel Grid.Column="2">
+                <TextBlock  Style="{DynamicResource SevenSegBox}" FontSize="20"
+                        HorizontalAlignment="Center" TextWrapping="Wrap" 
+                            Text="{Binding Path=TimeText,Source={StaticResource CultureResources}}"/>
+                <TextBlock  Style="{DynamicResource SevenSegBox}" FontSize="20"
+                        HorizontalAlignment="Center" TextWrapping="Wrap" Text="{Binding TimeDisplay,Mode=OneWay}"/>
+            </StackPanel>
         </Grid>
+        
+        <!--#endregion-->
+        
+        <!--#region Board-->
         <ItemsControl Grid.Row="2" ItemsSource="{Binding Tiles}">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <UniformGrid  Columns="{Binding ColumnsCount}" Rows="{Binding RowsCount}"/>
+                    <UniformGrid  Columns="{Binding Path=Params.ColumnsCount}" Rows="{Binding  Path=Params.RowsCount}"/>
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <Button  PreviewMouseDown="Tile_MouseDown" 
+                    <Button  PreviewMouseDown="Tile_MouseDown" Grid.Row="{Binding Path=Row,Mode=OneWay}" Grid.Column="{Binding Path=Column,Mode=OneWay}" 
                             Content="{Binding Path=Display,Converter={x:Static conv:TileDisplayConverter.Instance}}">
                         <Button.Style>
                             <Style TargetType="{x:Type Button}">
@@ -85,11 +99,8 @@
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
-        <StatusBar Grid.Row="3">
-            <TextBlock>
-                <Run Text="{Binding Path=LanguageText,Source={StaticResource CultureResources},Mode=OneWay}"/>
-                <Run Text="{Binding CurrentLanguage,Mode=OneWay}"/>
-            </TextBlock>
-        </StatusBar>
+        <!--#endregion-->
+       
+        
     </Grid>
 </Window>

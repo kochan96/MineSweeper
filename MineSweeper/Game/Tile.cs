@@ -6,15 +6,14 @@ namespace MineSweeper
 {
     public class Tile : INotifyPropertyChanged
     {
-        public Tile(bool bomb, int row, int column)
+        public Tile(int row, int column)
         {
-            Bomb = bomb;
             Row = row;
             Column = column;
         }
         public int Row { get; }
         public int Column { get; }
-        public bool Bomb { get; }
+        public bool Bomb { get; set; }
         public int AdjacentBombsCount { get; set; }
         public bool Discovered { get; set; }
         public bool Flaged { get; set; }
@@ -22,9 +21,11 @@ namespace MineSweeper
         {
             get
             {
-                if (Flaged)
+                if (Bomb && Flaged && Discovered)
+                    return Properties.Resources.DiffusedBomb;
+                else if (Flaged)
                     return Properties.Resources.Flag;
-                else if (Discovered || MainWindow.DEBUG)
+                else if (Discovered)
                 {
                     if (Bomb)
                         return Properties.Resources.Bomb;

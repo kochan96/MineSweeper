@@ -4,6 +4,8 @@
              xmlns:local="clr-namespace:MineSweeper"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-         
+        <ObjectDataProvider x:Key="CultureResources"
+                            ObjectType="{x:Type local:Localizer}"
+                            MethodName="GetResourceInstance"/>
     </Application.Resources>
 </Application>
