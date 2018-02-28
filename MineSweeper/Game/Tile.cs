@@ -15,17 +15,17 @@ namespace MineSweeper
         public int Column { get; }
         public bool Bomb { get; set; }
         public int AdjacentBombsCount { get; set; }
-        public bool Discovered { get; set; }
+        public bool Revealed { get; set; }
         public bool Flaged { get; set; }
         public object Display
         {
             get
             {
-                if (Bomb && Flaged && Discovered)
+                if (Bomb && Flaged && Revealed)
                     return Properties.Resources.DiffusedBomb;
                 else if (Flaged)
                     return Properties.Resources.Flag;
-                else if (Discovered)
+                else if (Revealed)
                 {
                     if (Bomb)
                         return Properties.Resources.Bomb;
@@ -43,9 +43,11 @@ namespace MineSweeper
             OnPropertyChanged(nameof(Display));
         }
 
-        public void RefreshDiscovered()
+        public void Reveal()
         {
-            OnPropertyChanged(nameof(Discovered));
+            Revealed = true;
+            OnPropertyChanged(nameof(Revealed));
+            OnPropertyChanged(nameof(Display));
         }
 
         #region INotfyPropertyChanged

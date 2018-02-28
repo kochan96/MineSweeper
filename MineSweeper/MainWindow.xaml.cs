@@ -114,7 +114,7 @@ namespace MineSweeper
                 return;
 
             Tile selectedTile = button.DataContext as Tile;
-            if (selectedTile == null || selectedTile.Discovered)
+            if (selectedTile == null || selectedTile.Revealed)
                 return;
 
             if (e.LeftButton == MouseButtonState.Pressed)

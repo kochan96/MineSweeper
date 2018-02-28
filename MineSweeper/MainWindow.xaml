@@ -81,7 +81,8 @@
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <Button  PreviewMouseDown="Tile_MouseDown" Grid.Row="{Binding Path=Row,Mode=OneWay}" Grid.Column="{Binding Path=Column,Mode=OneWay}" 
+                    <Button  
+                        PreviewMouseDown="Tile_MouseDown" 
                             Content="{Binding Path=Display,Converter={x:Static conv:TileDisplayConverter.Instance}}">
                         <Button.Style>
                             <Style TargetType="{x:Type Button}">
@@ -89,7 +90,7 @@
                                     <DataTrigger Binding="{Binding Path=Display,Converter={x:Static conv:IsIntegerOrEmptyConverter.Instance}}" Value="True">
                                         <Setter Property="Background" Value="White"/>
                                     </DataTrigger>
-                                    <DataTrigger Binding="{Binding Path=Discovered}" Value="False">
+                                    <DataTrigger Binding="{Binding Path=Revealed}" Value="False">
                                         <Setter Property="Background" Value="DimGray"/>
                                     </DataTrigger>
                                 </Style.Triggers>

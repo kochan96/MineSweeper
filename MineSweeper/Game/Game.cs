@@ -1,6 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 using System.Windows.Threading;
@@ -91,10 +91,9 @@ namespace MineSweeper
             {
                 if (t.Bomb)
                 {
-                    Proccess9(t, tile => { tile.AdjacentBombsCount++; });
-                    t.AdjacentBombsCount = 0;
+                    ProccessNeighboors(t, tile => { tile.AdjacentBombsCount++; }, true);
                 }
-                
+
             }
 
             //Refresh
@@ -153,12 +152,10 @@ namespace MineSweeper
 
         #region Game Logic
 
-        internal void ShowAllAdjacent(Tile tile)
+        internal void Reveal(Tile tile)
         {
-            int column = tile.Column;
-            int row = tile.Row;
-            int index = CalculateIndex(column, row);
-            if (index > Tiles.Length || index < 0 || tile.Discovered == true || tile.Flaged)
+            //OldWay
+            /*if (tile.Discovered == true || tile.Flaged || tile.Bomb)
                 return;
 
             tile.Discovered = true;
@@ -166,10 +163,64 @@ namespace MineSweeper
             tile.RefreshDisplay();
             TilesShown++;
 
+            //if tile contains something return 
             if (tile.Display.ToString() != String.Empty)
                 return;
 
-            //TODO
+            ProccessNeighboors(tile, t => { ShowANeighbours(t); }, false);*/
+
+            //NewWay
+            if (tile.Revealed || tile.Bomb || tile.Flaged)
+                return;
+            if (tile.AdjacentBombsCount > 0)
+            {
+                tile.Reveal();
+                return;
+            }
+
+            Queue<Tile> queue = new Queue<Tile>();
+            queue.Enqueue(tile);
+            while (queue.Count > 0)
+            {
+                Tile West = queue.Dequeue();
+                Tile East = West;
+                //if tile in grid and not discovered not flagged not bomb
+                //go west
+                while (West.Column > 0 && West.Revealed != true && !West.Flaged && !West.Bomb && West.AdjacentBombsCount == 0)
+                    West = Tiles[CalculateIndex(West.Row, West.Column - 1)];
+                //go east
+                while (East.Column < Params.ColumnsCount - 1 && East.Revealed != true && !East.Flaged && !East.Bomb && East.AdjacentBombsCount == 0)
+                    East = Tiles[CalculateIndex(East.Row, East.Column + 1)];
+
+                for (int column = West.Column; column <= East.Column; column++)
+                {
+                    Tile tmp = Tiles[CalculateIndex(West.Row, column)];
+                    //discover
+                    tmp.Reveal();
+                    tmp.RefreshDisplay();
+                    if (tmp.Row > 0)
+                    {
+                        Tile South = Tiles[CalculateIndex(tmp.Row - 1, tmp.Column)];
+                        if (South.Revealed != true && !South.Flaged && !South.Bomb)
+                            if (South.AdjacentBombsCount == 0)
+                                queue.Enqueue(South);
+                            else
+                                South.Reveal();
+                    }
+                    if (tmp.Row < Params.RowsCount - 1)
+                    {
+                        Tile North = Tiles[CalculateIndex(tmp.Row + 1, tmp.Column)];
+                        if (North.Revealed != true && !North.Flaged && !North.Bomb)
+                            if (North.AdjacentBombsCount == 0)
+                                queue.Enqueue(North);
+                            else
+                                North.Reveal();
+                    }
+
+                }
+            }
+
+
         }
 
         internal void ShowAllBombs()
@@ -178,9 +229,7 @@ namespace MineSweeper
             {
                 if (tile.Bomb)
                 {
-                    tile.Discovered = true;
-                    tile.RefreshDiscovered();
-                    tile.RefreshDisplay();
+                    tile.Reveal();
                 }
             }
             //endGame
@@ -211,7 +260,7 @@ namespace MineSweeper
             else
             {
                 FirstClick = false;
-                ShowAllAdjacent(selectedTile);
+                Reveal(selectedTile);
                 if (CheckEndGame())
                     EndGame();
             }
@@ -230,9 +279,9 @@ namespace MineSweeper
                 throw new Exception("Could not find tile without Bomb");
 
             tile.Bomb = false;
-            Proccess9(tile, t => t.AdjacentBombsCount--);
+            ProccessNeighboors(tile, t => t.AdjacentBombsCount--, true);
             tmp.Bomb = true;
-            Proccess9(tmp, t => t.AdjacentBombsCount++);
+            ProccessNeighboors(tmp, t => t.AdjacentBombsCount++, true);
             FirstClick = false;
             DiscoverTile(tile);
         }
@@ -249,9 +298,9 @@ namespace MineSweeper
 
         #region Help Methods
 
-        private int CalculateIndex(int y, int x)
+        private int CalculateIndex(int row, int col)
         {
-            return y * Params.ColumnsCount + x;
+            return row * Params.ColumnsCount + col;
         }
 
         private void CalculateRowColumn(int index, out int row, out int column)
@@ -260,7 +309,7 @@ namespace MineSweeper
             column = index % Params.ColumnsCount;
         }
 
-        private void Proccess9(Tile t, Action<Tile> method)
+        private void ProccessNeighboors(Tile t, Action<Tile> method, bool includeSender)
         {
             for (int rowOff = -1; rowOff <= 1; rowOff++)
             {
@@ -268,7 +317,7 @@ namespace MineSweeper
                 {
                     int row = t.Row + rowOff;
                     int column = t.Column + colOff;
-                    if (row > -1 && row < Params.RowsCount && column > -1 && column < Params.ColumnsCount)
+                    if (row > -1 && row < Params.RowsCount && column > -1 && column < Params.ColumnsCount && (includeSender || colOff != 0 || rowOff != 0))
                         method(Tiles[CalculateIndex(row, column)]);
                 }
             }

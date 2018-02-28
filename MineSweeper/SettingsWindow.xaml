@@ -24,11 +24,11 @@
         <Label Grid.Column="0" Grid.Row="0" HorizontalAlignment="Right" Margin="2"
             Content="{Binding Path=RowsText,Source={StaticResource CultureResources}}"/>
         <xctk:ShortUpDown Grid.Column="1" Grid.Row="0" Margin="2"
-                          Value="{Binding Path=RowsCount,UpdateSourceTrigger=PropertyChanged}" Minimum="2" Maximum="40"/>
+                          Value="{Binding Path=RowsCount,UpdateSourceTrigger=PropertyChanged}" Minimum="2" />
         <Label Grid.Column="0" Grid.Row="1" HorizontalAlignment="Right" Margin="2"
             Content="{Binding Path=ColumnsText,Source={StaticResource CultureResources}}"/>
         <xctk:ShortUpDown Grid.Column="1" Grid.Row="1" Margin="2"
-                          Value="{Binding Path=ColumnsCount,UpdateSourceTrigger=PropertyChanged}" Minimum="2" Maximum="40"/>
+                          Value="{Binding Path=ColumnsCount,UpdateSourceTrigger=PropertyChanged}" Minimum="2" />
         <Label Grid.Column="0" Grid.Row="2" HorizontalAlignment="Right" Margin="2"
             Content="{Binding Path=BombCountText,Source={StaticResource CultureResources}}"/>
         <xctk:ShortUpDown Grid.Column="1" Grid.Row="2" Margin="2"
