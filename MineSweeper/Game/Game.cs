@@ -72,33 +72,36 @@ namespace MineSweeper
             OnPropertyChanged(nameof(BombCountDisplay));
 
             Tiles = new Tile[Params.RowsCount * Params.ColumnsCount];
-            bool[] bombs = new bool[Tiles.Length];
-            for (int i = 0; i < Params.BombCount; i++)
-                bombs[i] = true;
 
-            Shuffle(bombs);
+            //Create and shuffle Bombs
+            bool[] bombs = Enumerable.Repeat(true, Params.BombCount)
+                .Concat(Enumerable.Repeat(false, Tiles.Length - Params.BombCount))
+                .OrderBy(r => rnd.Next())
+                .ToArray();
+
+            //CreateGrid
             for (int i = 0; i < bombs.Length; i++)
             {
-                Tile tile = new Tile(i / Params.ColumnsCount, i % Params.ColumnsCount);
-                tile.Bomb = bombs[i];
-                int index = CalculateIndex(tile.Row, tile.Column);
-                Debug.WriteLine(index);
-                Tiles[index] = tile;
+                CalculateRowColumn(i, out int row, out int column);
+                Tiles[i] = new Tile(row, column) { Bomb = bombs[i] };
             }
 
-            for (int i = 0; i < Tiles.Length; i++)
+            //Calculate Number of AdjacentBombs
+            foreach (Tile t in Tiles)
             {
-
-                if (Tiles[i].Bomb)
+                if (t.Bomb)
                 {
-
-                    ProccessAdjacent(Tiles[i].Column, Tiles[i].Row, (t) => t.AdjacentBombsCount++);
+                    Proccess9(t, tile => { tile.AdjacentBombsCount++; });
+                    t.AdjacentBombsCount = 0;
                 }
+                
             }
 
+            //Refresh
             OnPropertyChanged(nameof(Tiles));
             OnPropertyChanged(nameof(Params));
 
+            //StartTimer
             if (Timer == null)
             {
                 Timer = new DispatcherTimer();
@@ -166,16 +169,19 @@ namespace MineSweeper
             if (tile.Display.ToString() != String.Empty)
                 return;
 
-            ProccessAdjacent(column, row, (t) => ShowAllAdjacent(t));
+            //TODO
         }
 
         internal void ShowAllBombs()
         {
-            foreach (Tile tile in Tiles.Where(t => t.Bomb))
+            foreach (Tile tile in Tiles)
             {
-                tile.Discovered = true;
-                tile.RefreshDiscovered();
-                tile.RefreshDisplay();
+                if (tile.Bomb)
+                {
+                    tile.Discovered = true;
+                    tile.RefreshDiscovered();
+                    tile.RefreshDisplay();
+                }
             }
             //endGame
             TilesShown = Tiles.Length - FlagCount;
@@ -213,13 +219,20 @@ namespace MineSweeper
 
         internal void MoveBomb(Tile tile)
         {
-            Tile tmp = Tiles.First(t2 => t2.Bomb == false);
+            Tile tmp = null;
+            foreach (Tile t in Tiles)
+            {
+                if (!t.Bomb)
+                    tmp = t;
+            }
+
+            if (tmp == null)
+                throw new Exception("Could not find tile without Bomb");
 
             tile.Bomb = false;
-            ProccessAdjacent(tile.Column, tile.Row, (t) => t.AdjacentBombsCount--);
+            Proccess9(tile, t => t.AdjacentBombsCount--);
             tmp.Bomb = true;
-            ProccessAdjacent(tmp.Column, tmp.Row, (t2) => { t2.AdjacentBombsCount++; });
-
+            Proccess9(tmp, t => t.AdjacentBombsCount++);
             FirstClick = false;
             DiscoverTile(tile);
         }
@@ -241,48 +254,27 @@ namespace MineSweeper
             return y * Params.ColumnsCount + x;
         }
 
-        private void Shuffle(bool[] list)
+        private void CalculateRowColumn(int index, out int row, out int column)
         {
-            int n = list.Length;
-            while (n > 1)
-            {
-                n--;
-                int k = rnd.Next(n + 1);
-                bool value = list[k];
-                list[k] = list[n];
-                list[n] = value;
-            }
-
+            row = index / Params.ColumnsCount;
+            column = index % Params.ColumnsCount;
         }
 
-        private void ProccessAdjacent(int x, int y, Action<Tile> method)
+        private void Proccess9(Tile t, Action<Tile> method)
         {
-            if (x > 0)
+            for (int rowOff = -1; rowOff <= 1; rowOff++)
             {
-                if (y > 0)
-                    method(Tiles[CalculateIndex(y - 1, x - 1)]);//top-left
-                if (y < Params.RowsCount)
-                    method(Tiles[CalculateIndex(y, x - 1)]);//left
-                if (y < Params.RowsCount - 1)
-                    method(Tiles[CalculateIndex(y + 1, x - 1)]);//bottom-left
-            }
-            if (x < Params.ColumnsCount)
-            {
-                if (y > 0)
-                    method(Tiles[CalculateIndex(y - 1, x)]);//top
-                if (y < Params.RowsCount - 1)
-                    method(Tiles[CalculateIndex(y + 1, x)]);//bottom
-            }
-            if (x < Params.ColumnsCount - 1)
-            {
-                if (y > 0)
-                    method(Tiles[CalculateIndex(y - 1, x + 1)]);//top-right
-                if (y < Params.RowsCount)
-                    method(Tiles[CalculateIndex(y, x + 1)]);//right
-                if (y < Params.RowsCount - 1)
-                    method(Tiles[CalculateIndex(y + 1, x + 1)]);//bottom-right
+                for (int colOff = -1; colOff <= 1; colOff++)
+                {
+                    int row = t.Row + rowOff;
+                    int column = t.Column + colOff;
+                    if (row > -1 && row < Params.RowsCount && column > -1 && column < Params.ColumnsCount)
+                        method(Tiles[CalculateIndex(row, column)]);
+                }
             }
         }
+
         #endregion
+
     }
 }

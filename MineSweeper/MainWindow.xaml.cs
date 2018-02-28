@@ -95,28 +95,7 @@ namespace MineSweeper
         #region Languages
         private void SetLanguage(Language lang)
         {
-            switch (lang)
-            {
-                case MineSweeper.Language.English:
-                    {
-                        System.Threading.Thread.CurrentThread.CurrentUICulture = CultureInfo.GetCultureInfo("en-US");
-                        System.Threading.Thread.CurrentThread.CurrentCulture = CultureInfo.GetCultureInfo("en-US");
-                        break;
-                    }
-                case MineSweeper.Language.Polish:
-                    {
-                        System.Threading.Thread.CurrentThread.CurrentUICulture = CultureInfo.GetCultureInfo("pl-PL");
-                        System.Threading.Thread.CurrentThread.CurrentCulture = CultureInfo.GetCultureInfo("pl-PL");
-                        break;
-                    }
-                default:
-                    throw new NotImplementedException();
-            }
-            ObjectDataProvider provider = TryFindResource("CultureResources") as ObjectDataProvider;
-            if (provider == null)
-                MessageBox.Show(Properties.Resources.ProviderNullError);
-
-            provider?.Refresh();//refresh text
+            Localizer.SetLanguage(lang);
         }
         #endregion
 
