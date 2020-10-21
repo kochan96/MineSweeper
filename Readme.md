@@ -9,4 +9,4 @@ Right Click - Set/Unset Flag
  - Polish and English language version
  - Able to set Size and number of bombs
 
-![Game](GAME.PNG)
+![Game](Game.PNG)
